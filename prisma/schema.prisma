@@ -1,0 +1,97 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int              @id @default(autoincrement())
+  username          String           @unique
+  name              String?
+  email             String           @unique
+  password          String
+  avatarURL         String?
+  role              UserRole         @default(MEMBER)
+  translatorGroupId Int?             @unique
+  translatorGroup   TranslatorGroup? @relation("translator_member", fields: [translatorGroupId], references: [id])
+  managerGroup      TranslatorGroup? @relation("translator_manager")
+}
+
+model Artist {
+  id        Int     @id @default(autoincrement())
+  name      String
+  slug      String  @unique
+  about     String?
+  avatarURL String?
+  mangas    Manga[]
+}
+
+model Category {
+  id          Int                 @id @default(autoincrement())
+  title       String
+  slug        String              @unique
+  description String?
+  mangas      CategoriesOnManga[]
+}
+
+model TranslatorGroup {
+  id          Int                      @id @default(autoincrement())
+  name        String
+  description String?
+  managerId   Int                      @unique
+  manager     User                     @relation("translator_manager", fields: [managerId], references: [id])
+  members     User[]                   @relation("translator_member")
+  mangas      TranslatorGroupOnManga[]
+}
+
+model Manga {
+  id               Int                      @id @default(autoincrement())
+  name             String
+  slug             String                   @unique
+  otherName        String?
+  description      String?
+  status           MangaStatus              @default(ONGOING)
+  coverURL         String?
+  releaseYear      String?
+  lastUpdated      DateTime                 @default(now()) @db.DateTime(0)
+  viewCount        Int                      @default(0)
+  artist           Artist                   @relation(fields: [artistId], references: [id])
+  artistId         Int
+  categories       CategoriesOnManga[]
+  translatorGroups TranslatorGroupOnManga[]
+}
+
+model CategoriesOnManga {
+  manga      Manga    @relation(fields: [mangaId], references: [id])
+  mangaId    Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  @@id([mangaId, categoryId])
+}
+
+model TranslatorGroupOnManga {
+  mangaId           Int
+  translatorGroupId Int
+  manga             Manga           @relation(fields: [mangaId], references: [id])
+  translatorGroup   TranslatorGroup @relation(fields: [translatorGroupId], references: [id])
+
+  @@id([mangaId, translatorGroupId])
+}
+
+enum UserRole {
+  MEMBER
+  TRANSLATOR
+  MODERATOR
+  ADMINISTRATOR
+}
+
+enum MangaStatus {
+  CANCELLED
+  DROPPED
+  ONGOING
+  COMPLETED
+}
