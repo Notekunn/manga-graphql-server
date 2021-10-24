@@ -15,16 +15,16 @@ export default {
         },
       })
     },
-    translatorGroups: async (parent: Manga, args: any, context: Context) => {
-      const data = await context.prisma.translatorGroupOnManga.findMany({
+    groups: async (parent: Manga, args: any, context: Context) => {
+      const data = await context.prisma.groupsOnManga.findMany({
         where: {
           mangaId: parent.id,
         },
         include: {
-          translatorGroup: true,
+          group: true,
         },
       })
-      return data.map((e) => e.translatorGroup)
+      return data.map((e) => e.group)
     },
     categories: async (parent: Manga, args: any, context: Context) => {
       const data = await context.prisma.categoriesOnManga.findMany({

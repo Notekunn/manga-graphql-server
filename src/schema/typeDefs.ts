@@ -4,9 +4,13 @@ const typeDefs = gql`
   scalar Date
   enum UserRole {
     MEMBER
-    TRANSLATOR
     MODERATOR
     ADMINISTRATOR
+  }
+
+  enum GroupRole {
+    MEMBER
+    MODERATOR
   }
 
   enum MangaStatus {
@@ -23,8 +27,7 @@ const typeDefs = gql`
     password: String!
     avatarURL: String
     role: UserRole!
-    translatorGroup: TranslatorGroup!
-    managerGroup: TranslatorGroup
+    groups: [GroupUser!]!
   }
   type Artist {
     id: ID!
@@ -41,7 +44,7 @@ const typeDefs = gql`
     description: String
     mangas: [Manga!]!
   }
-  type TranslatorGroup {
+  type Group {
     id: ID!
     name: String!
     description: String
@@ -62,14 +65,29 @@ const typeDefs = gql`
     viewCount: Int!
     artist: Artist
     categories: [Category!]!
-    translatorGroups: [TranslatorGroup!]!
+    groups: [Group!]!
+    chapters: [Chapter!]!
+  }
+  type Chapter {
+    manga: Manga!
+    chapterName: String!
+    chapterFullName: String
+    viewCount: Int!
+    content: String!
+    lastUpdated: Date!
   }
   type Query {
     mangas: [Manga!]!
     artists: [Artist!]!
     users: [User!]!
     categories: [Category!]!
-    groups: [TranslatorGroup!]!
+    groups: [Group!]!
+    chapters: [Chapter!]!
+  }
+  type GroupUser {
+    group: Group!
+    role: GroupRole!
+    participantAt: Date!
   }
 `
 export default typeDefs

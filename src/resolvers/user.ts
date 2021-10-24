@@ -1,5 +1,5 @@
 import type { Context } from '../context'
-import type { User } from '@prisma/client'
+import type { Group, User } from '@prisma/client'
 
 export default {
   Query: {
@@ -9,20 +9,17 @@ export default {
   },
 
   User: {
-    translatorGroup: (parent: User, args: any, context: Context) => {
-      if (parent.translatorGroupId == null) return null
-      return context.prisma.translatorGroup.findUnique({
+    groups: async (parent: User, args: any, context: Context) => {
+      console.log('🚀 ~ file: user.ts ~ line 13 ~ groups: ~ parent', parent)
+      const data = await context.prisma.groupMember.findMany({
         where: {
-          id: parent.translatorGroupId,
+          memberId: parent.id,
+        },
+        include: {
+          group: true,
         },
       })
-    },
-    managerGroup: (parent: User, args: any, context: Context) => {
-      return context.prisma.translatorGroup.findUnique({
-        where: {
-          managerId: parent.id,
-        },
-      })
+      return data.map((e) => e)
     },
   },
 }

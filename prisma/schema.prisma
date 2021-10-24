@@ -8,16 +8,14 @@ generator client {
 }
 
 model User {
-  id                Int              @id @default(autoincrement())
-  username          String           @unique
-  name              String?
-  email             String           @unique
-  password          String
-  avatarURL         String?
-  role              UserRole         @default(MEMBER)
-  translatorGroupId Int?             @unique
-  translatorGroup   TranslatorGroup? @relation("translator_member", fields: [translatorGroupId], references: [id])
-  managerGroup      TranslatorGroup? @relation("translator_manager")
+  id          Int           @id @default(autoincrement())
+  username    String        @unique
+  name        String?
+  email       String        @unique
+  password    String
+  avatarURL   String?
+  role        UserRole      @default(MEMBER)
+  GroupMember GroupMember[]
 }
 
 model Artist {
@@ -37,31 +35,44 @@ model Category {
   mangas      CategoriesOnManga[]
 }
 
-model TranslatorGroup {
-  id          Int                      @id @default(autoincrement())
+model Group {
+  id          Int             @id @default(autoincrement())
   name        String
   description String?
-  managerId   Int                      @unique
-  manager     User                     @relation("translator_manager", fields: [managerId], references: [id])
-  members     User[]                   @relation("translator_member")
-  mangas      TranslatorGroupOnManga[]
+  mangas      GroupsOnManga[]
+
+  GroupMember GroupMember[]
+  @@map("group")
+}
+
+model GroupMember {
+  groupId       Int
+  memberId      Int
+  role          GroupRole @default(MEMBER)
+  group         Group     @relation(fields: [groupId], references: [id])
+  member        User      @relation(fields: [memberId], references: [id])
+  participantAt DateTime  @default(now()) @db.DateTime(0)
+
+  @@id([groupId, memberId])
+  @@map("group_member")
 }
 
 model Manga {
-  id               Int                      @id @default(autoincrement())
+  id               Int                 @id @default(autoincrement())
   name             String
-  slug             String                   @unique
+  slug             String              @unique
   otherName        String?
   description      String?
-  status           MangaStatus              @default(ONGOING)
+  status           MangaStatus         @default(ONGOING)
   coverURL         String?
   releaseYear      String?
-  lastUpdated      DateTime                 @default(now()) @db.DateTime(0)
-  viewCount        Int                      @default(0)
-  artist           Artist                   @relation(fields: [artistId], references: [id])
+  lastUpdated      DateTime            @default(now()) @db.DateTime(0)
+  viewCount        Int                 @default(0)
+  artist           Artist              @relation(fields: [artistId], references: [id])
   artistId         Int
   categories       CategoriesOnManga[]
-  translatorGroups TranslatorGroupOnManga[]
+  translatorGroups GroupsOnManga[]
+  chapters         Chapter[]
 }
 
 model CategoriesOnManga {
@@ -71,20 +82,43 @@ model CategoriesOnManga {
   categoryId Int
 
   @@id([mangaId, categoryId])
+  @@map("category_manga")
 }
 
-model TranslatorGroupOnManga {
-  mangaId           Int
-  translatorGroupId Int
-  manga             Manga           @relation(fields: [mangaId], references: [id])
-  translatorGroup   TranslatorGroup @relation(fields: [translatorGroupId], references: [id])
+model GroupsOnManga {
+  mangaId Int
+  groupId Int
+  manga   Manga @relation(fields: [mangaId], references: [id])
+  group   Group @relation(fields: [groupId], references: [id])
 
-  @@id([mangaId, translatorGroupId])
+  @@id([mangaId, groupId])
+  @@map("group_manga")
+}
+
+model Chapter {
+  chapterName     String
+  mangaId         Int
+  manga           Manga    @relation(fields: [mangaId], references: [id])
+  chapterFullName String?
+  viewCount       Int      @default(0)
+  lastUpdated     DateTime @default(now()) @db.DateTime(0)
+  content         String?  @db.Text
+
+  @@id([chapterName, mangaId])
+}
+
+model ViewCount {
+  chapterName String
+  mangaId     Int
+  date        DateTime @default(now()) @db.Date
+  view        Int
+
+  @@id([chapterName, mangaId, date])
+  @@map("view_count")
 }
 
 enum UserRole {
   MEMBER
-  TRANSLATOR
   MODERATOR
   ADMINISTRATOR
 }
@@ -94,4 +128,9 @@ enum MangaStatus {
   DROPPED
   ONGOING
   COMPLETED
+}
+
+enum GroupRole {
+  MEMBER
+  MODERATOR
 }
