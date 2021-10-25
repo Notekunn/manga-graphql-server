@@ -96,24 +96,24 @@ model GroupsOnManga {
 }
 
 model Chapter {
+  id              Int         @id @default(autoincrement())
   chapterName     String
   mangaId         Int
-  manga           Manga    @relation(fields: [mangaId], references: [id])
+  manga           Manga       @relation(fields: [mangaId], references: [id])
   chapterFullName String?
-  viewCount       Int      @default(0)
-  lastUpdated     DateTime @default(now()) @db.DateTime(0)
-  content         String?  @db.Text
-
-  @@id([chapterName, mangaId])
+  viewCount       Int         @default(0)
+  lastUpdated     DateTime    @default(now()) @db.DateTime(0)
+  content         String?     @db.Text
+  ViewCount       ViewCount[]
 }
 
 model ViewCount {
-  chapterName String
-  mangaId     Int
-  date        DateTime @default(now()) @db.Date
-  view        Int
+  chapterId Int
+  date      String
+  view      Int     @default(0)
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
 
-  @@id([chapterName, mangaId, date])
+  @@id([chapterId, date])
   @@map("view_count")
 }
 

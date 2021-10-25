@@ -1,4 +1,5 @@
 import type { Context, Prisma, Arguments } from '../context'
+import { getCurrentDate } from '../utils'
 interface ChapterFilter {}
 export default {
   Query: {
@@ -7,18 +8,56 @@ export default {
         where: {},
       })
     },
-    chapter: (_parent: any, args: { chapterName: string; mangaId: number }, context: Context) => {
+    chapter: (_parent: any, args: { chapterId: number }, context: Context) => {
       return context.prisma.chapter.findUnique({
         where: {
-          chapterName_mangaId: {
-            chapterName: args.chapterName,
-            mangaId: args.mangaId,
-          },
+          id: args.chapterId,
         },
         include: {
           manga: true,
         },
       })
+    },
+  },
+  Mutation: {
+    updateView: async (parent: any, args: { chapterId: number }, context: Context) => {
+      const { view, chapterId } = await context.prisma.viewCount.upsert({
+        where: {
+          chapterId_date: {
+            chapterId: args.chapterId,
+            date: getCurrentDate(),
+          },
+        },
+        create: {
+          chapterId: args.chapterId,
+          date: getCurrentDate(),
+          view: 1,
+        },
+        update: {
+          view: {
+            increment: 1, // Tăng thêm 1 view
+          },
+        },
+      })
+      // console.log('🚀 ~ file: chapter.ts ~ line 41 ~ updateView: ~ data', data)
+      await context.prisma.chapter.update({
+        where: {
+          id: chapterId,
+        },
+        data: {
+          viewCount: {
+            increment: 1,
+          },
+          manga: {
+            update: {
+              viewCount: {
+                increment: 1,
+              },
+            },
+          },
+        },
+      })
+      return view
     },
   },
 }

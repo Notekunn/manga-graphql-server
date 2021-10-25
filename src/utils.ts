@@ -1,4 +1,5 @@
-import { Pagination } from './context'
+import moment from 'moment-timezone'
+const TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 interface StringObject {
   [key: string]: any
@@ -57,4 +58,12 @@ export const resolvePagingArgs = <T extends PaginationArg>(input: {
   }
   if (limit && limit > 0) args.take = limit
   return args
+}
+
+export const getCurrentDate = (): string => {
+  return moment.tz(TIME_ZONE).format('DD/MM/YYYY')
+}
+
+export const getCurrentDateTime = (): Date => {
+  return new Date()
 }

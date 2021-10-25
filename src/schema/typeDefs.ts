@@ -84,6 +84,16 @@ const typeDefs = gql`
     groups: [Group!]!
     chapters: [Chapter!]!
     chapter: Chapter!
+
+    topManga(type: TopMangaType): Int
+  }
+  type Mutation {
+    updateView(chapterId: Int!): Int!
+  }
+  enum TopMangaType {
+    DATE
+    WEEK
+    ALL
   }
   type GroupUser {
     group: Group!

@@ -3,6 +3,7 @@ import userResolver from './user'
 import artistResolver from './artist'
 import categoryResolver from './category'
 import translatorResolver from './translator'
+import chapterResolver from './chapter'
 import { mergeDeep } from '../utils'
 const resolvers = mergeDeep(
   {},
@@ -10,6 +11,7 @@ const resolvers = mergeDeep(
   userResolver,
   artistResolver,
   categoryResolver,
-  translatorResolver
+  translatorResolver,
+  chapterResolver
 )
 export default resolvers
