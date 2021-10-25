@@ -83,6 +83,7 @@ const typeDefs = gql`
     categories: [Category!]!
     groups: [Group!]!
     chapters: [Chapter!]!
+    chapter: Chapter!
   }
   type GroupUser {
     group: Group!

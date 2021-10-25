@@ -10,3 +10,5 @@ export const context: Context = {
   prisma,
   user: null,
 }
+
+export { Prisma } from '@prisma/client'

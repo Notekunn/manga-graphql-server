@@ -37,5 +37,13 @@ export default {
       })
       return data.map((e) => e.category)
     },
+    chapters: async (parent: Manga, args: any, context: Context) => {
+      const data = await context.prisma.chapter.findMany({
+        where: {
+          mangaId: parent.id,
+        },
+      })
+      return data
+    },
   },
 }
