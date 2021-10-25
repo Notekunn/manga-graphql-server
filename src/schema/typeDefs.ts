@@ -66,18 +66,19 @@ const typeDefs = gql`
     artist: Artist
     categories: [Category!]!
     groups: [Group!]!
-    chapters: [Chapter!]!
+    chapters(cursor: Int, limit: Int): [Chapter!]!
   }
   type Chapter {
     manga: Manga!
     chapterName: String!
     chapterFullName: String
     viewCount: Int!
-    content: String!
+    content: String
     lastUpdated: Date!
   }
   type Query {
     mangas: [Manga!]!
+    manga(id: Int!): Manga!
     artists: [Artist!]!
     users(cursor: Int, limit: Int): [User!]!
     categories: [Category!]!
