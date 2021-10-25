@@ -1,3 +1,5 @@
+import { Pagination } from './context'
+
 interface StringObject {
   [key: string]: any
 }
@@ -31,4 +33,28 @@ export function mergeDeep(target: StringObject, ...sources: StringObject[]): Str
   }
 
   return mergeDeep(target, ...sources)
+}
+
+interface PaginationArg {
+  cursor?: {
+    id?: number
+  }
+  take?: number
+  skip?: number
+}
+
+export const resolvePagingArgs = <T extends PaginationArg>(input: {
+  cursor?: number
+  limit?: number
+}): T => {
+  const { cursor, limit } = input
+  const args = {} as T
+  if (cursor) {
+    args.cursor = {
+      id: cursor,
+    }
+    args.skip = 1
+  }
+  if (limit && limit > 0) args.take = limit
+  return args
 }

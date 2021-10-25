@@ -79,7 +79,7 @@ const typeDefs = gql`
   type Query {
     mangas: [Manga!]!
     artists: [Artist!]!
-    users: [User!]!
+    users(cursor: Int, limit: Int): [User!]!
     categories: [Category!]!
     groups: [Group!]!
     chapters: [Chapter!]!

@@ -12,3 +12,10 @@ export const context: Context = {
 }
 
 export { Prisma } from '@prisma/client'
+
+export interface Pagination {
+  cursor?: number
+  limit?: number
+}
+
+export type Arguments<T = {}> = T & Pagination

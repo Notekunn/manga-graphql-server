@@ -1,9 +1,9 @@
-import type { Context } from '../context'
+import type { Context, Arguments } from '../context'
 import type { Category } from '@prisma/client'
 
 export default {
   Query: {
-    categories: (parent: any, args: any, context: Context) => {
+    categories: (parent: any, args: Arguments, context: Context) => {
       return context.prisma.category.findMany({})
     },
   },

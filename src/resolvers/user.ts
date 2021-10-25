@@ -1,10 +1,15 @@
-import type { Context } from '../context'
+import type { Context, Arguments, Prisma } from '../context'
 import type { Group, User } from '@prisma/client'
+import { resolvePagingArgs } from '../utils'
 
 export default {
   Query: {
-    users: (parent: any, args: any, context: Context) => {
-      return context.prisma.user.findMany({})
+    users: async (parent: any, args: Arguments, context: Context) => {
+      const pagging = resolvePagingArgs<Prisma.UserFindManyArgs>(args)
+      const data = await context.prisma.user.findMany({
+        ...pagging,
+      })
+      return data
     },
   },
 
