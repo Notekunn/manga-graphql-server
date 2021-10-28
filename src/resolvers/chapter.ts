@@ -21,28 +21,9 @@ export default {
   },
   Mutation: {
     updateView: async (parent: any, args: { chapterId: number }, context: Context) => {
-      const { view, chapterId } = await context.prisma.viewCount.upsert({
+      const { manga } = await context.prisma.chapter.update({
         where: {
-          chapterId_date: {
-            chapterId: args.chapterId,
-            date: getCurrentDate(),
-          },
-        },
-        create: {
-          chapterId: args.chapterId,
-          date: getCurrentDate(),
-          view: 1,
-        },
-        update: {
-          view: {
-            increment: 1, // Tăng thêm 1 view
-          },
-        },
-      })
-      // console.log('🚀 ~ file: chapter.ts ~ line 41 ~ updateView: ~ data', data)
-      await context.prisma.chapter.update({
-        where: {
-          id: chapterId,
+          id: args.chapterId,
         },
         data: {
           viewCount: {
@@ -56,7 +37,31 @@ export default {
             },
           },
         },
+        include: {
+          manga: true,
+        },
       })
+      const { view } = await context.prisma.viewCount.upsert({
+        where: {
+          chapterId_date: {
+            chapterId: args.chapterId,
+            date: getCurrentDate(),
+          },
+        },
+        create: {
+          chapterId: args.chapterId,
+          date: getCurrentDate(),
+          view: 1,
+          mangaId: manga.id,
+        },
+        update: {
+          view: {
+            increment: 1, // Tăng thêm 1 view
+          },
+        },
+      })
+      // console.log('🚀 ~ file: chapter.ts ~ line 41 ~ updateView: ~ data', data)
+
       return view
     },
   },

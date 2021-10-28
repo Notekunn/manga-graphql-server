@@ -111,6 +111,7 @@ model ViewCount {
   chapterId Int
   date      String
   view      Int     @default(0)
+  mangaId   Int
   chapter   Chapter @relation(fields: [chapterId], references: [id])
 
   @@id([chapterId, date])

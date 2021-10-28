@@ -78,7 +78,7 @@ const typeDefs = gql`
   }
   type Query {
     mangas: [Manga!]!
-    manga(id: Int!): Manga!
+    manga(slug: String!): Manga
     artists: [Artist!]!
     users(cursor: Int, limit: Int): [User!]!
     categories: [Category!]!
@@ -86,10 +86,14 @@ const typeDefs = gql`
     chapters: [Chapter!]!
     chapter: Chapter!
 
-    topManga(type: TopMangaType): Int
+    topManga(type: TopMangaType): [TopMangaResponse!]!
   }
   type Mutation {
     updateView(chapterId: Int!): Int!
+  }
+  type TopMangaResponse {
+    manga: Manga!
+    view: Int!
   }
   enum TopMangaType {
     DATE

@@ -1,16 +1,52 @@
 import type { Arguments, Context, Prisma } from '../context'
 import type { Manga } from '@prisma/client'
-import { resolvePagingArgs } from '../utils'
+import { getCurrentDate, resolvePagingArgs } from '../utils'
 
 export default {
   Query: {
     mangas: (parent: any, args: any, context: Context) => {
       return context.prisma.manga.findMany({})
     },
-    manga: (parent: any, args: { id: number }, context: Context) => {
+    manga: (parent: any, args: { slug: string }, context: Context) => {
       return context.prisma.manga.findUnique({
         where: {
-          id: args.id,
+          slug: args.slug,
+        },
+      })
+    },
+    topManga: async (parent: any, args: { type: 'DATE' | 'MONTH' | 'ALL' }, context: Context) => {
+      if (args.type == 'DATE') {
+        const data = await context.prisma.viewCount.groupBy({
+          _sum: {
+            view: true,
+          },
+          by: ['mangaId'],
+          orderBy: {
+            _sum: {
+              view: 'desc',
+            },
+          },
+          where: {
+            date: getCurrentDate(),
+          },
+          take: 10,
+        })
+
+        return data.map((e) => {
+          return {
+            view: e._sum.view,
+            mangaId: e.mangaId,
+          }
+        })
+      }
+      return []
+    },
+  },
+  TopMangaResponse: {
+    manga: (parent: { mangaId: number }, args: any, context: Context) => {
+      return context.prisma.manga.findUnique({
+        where: {
+          id: parent.mangaId,
         },
       })
     },
@@ -53,7 +89,7 @@ export default {
           mangaId: parent.id,
         },
         orderBy: {
-          lastUpdated: 'asc',
+          id: 'desc',
         },
         ...pagging,
       })
