@@ -1,3 +1,4 @@
+import { getCurrentDate } from './src/utils'
 import faker from 'faker'
 import { Prisma, PrismaClient } from '@prisma/client'
 const COUNT_ARTIST = 10
@@ -118,6 +119,7 @@ async function genManga() {
     },
   })
   await genMangaCategories(manga.id, randomNumber(3, 5))
+  await genChapters(manga.id, randomNumber(4, 10))
 }
 async function genMangaCategories(mangaId: number, n: number) {
   const data: Prisma.CategoriesOnMangaCreateManyInput[] = []
@@ -186,6 +188,24 @@ async function genTranslatorGroup(memberCount: number) {
 async function genTranslatorGroups(n: number) {
   for (let i = 0; i < n; i++) {
     genTranslatorGroup(COUNT_MEMBER_ON_GROUP)
+  }
+}
+async function genChapters(mangaId: number, n: number) {
+  for (let i = 0; i < n; i++) {
+    await prisma.chapter.create({
+      data: {
+        chapterName: i + 1 + '',
+        ViewCount: {
+          create: {
+            date: getCurrentDate(),
+            mangaId,
+            view: randomNumber(10, 100),
+          },
+        },
+        mangaId,
+        chapterFullName: faker.lorem.word(randomNumber(3, 8)),
+      },
+    })
   }
 }
 // async function genManga
