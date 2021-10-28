@@ -104,12 +104,12 @@ CREATE TABLE `Chapter` (
 
 -- CreateTable
 CREATE TABLE `view_count` (
-    `chapterName` VARCHAR(191) NOT NULL,
+    `chapterId` INTEGER NOT NULL,
+    `date` VARCHAR(191) NOT NULL,
+    `view` INTEGER NOT NULL DEFAULT 0,
     `mangaId` INTEGER NOT NULL,
-    `date` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `view` INTEGER NOT NULL,
 
-    PRIMARY KEY (`chapterName`, `mangaId`, `date`)
+    PRIMARY KEY (`chapterId`, `date`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -135,3 +135,6 @@ ALTER TABLE `group_manga` ADD CONSTRAINT `group_manga_groupId_fkey` FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE `Chapter` ADD CONSTRAINT `Chapter_mangaId_fkey` FOREIGN KEY (`mangaId`) REFERENCES `Manga`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `view_count` ADD CONSTRAINT `view_count_chapterId_fkey` FOREIGN KEY (`chapterId`) REFERENCES `Chapter`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
