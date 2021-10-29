@@ -87,6 +87,7 @@ const typeDefs = gql`
     chapter: Chapter!
 
     topManga(type: TopMangaType): [TopMangaResponse!]!
+    profile: User!
   }
   input AuthInput {
     username: String!

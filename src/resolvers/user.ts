@@ -16,12 +16,14 @@ const comparePassword = function (password: string, passwd: string): boolean {
 export default {
   Query: {
     users: async (parent: any, args: Arguments, context: Context) => {
-      console.log(context.user)
       const pagging = resolvePagingArgs<Prisma.UserFindManyArgs>(args)
       const data = await context.prisma.user.findMany({
         ...pagging,
       })
       return data
+    },
+    profile: async (parent: any, args: any, context: Context) => {
+      return context.user
     },
   },
   Mutation: {
