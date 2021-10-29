@@ -63,7 +63,19 @@ export const resolvePagingArgs = <T extends PaginationArg>(input: {
 export const getCurrentDate = (): string => {
   return moment.tz(TIME_ZONE).format('DD/MM/YYYY')
 }
-
+export const getDayOfWeek = (): string[] => {
+  const today = moment.tz(TIME_ZONE)
+  const days = [] as string[]
+  for (let i = 0; i < 6; i++) {
+    days.push(today.weekday(i).format('DD/MM/YYYY'))
+  }
+  return days
+}
 export const getCurrentDateTime = (): Date => {
   return new Date()
+}
+
+export interface JWTPayload {
+  email: string
+  username: string
 }

@@ -1,6 +1,6 @@
 import type { Arguments, Context, Prisma } from '../context'
 import type { Manga } from '@prisma/client'
-import { getCurrentDate, resolvePagingArgs } from '../utils'
+import { getCurrentDate, getDayOfWeek, resolvePagingArgs } from '../utils'
 
 export default {
   Query: {
@@ -14,7 +14,7 @@ export default {
         },
       })
     },
-    topManga: async (parent: any, args: { type: 'DATE' | 'MONTH' | 'ALL' }, context: Context) => {
+    topManga: async (parent: any, args: { type: 'DATE' | 'WEEK' | 'ALL' }, context: Context) => {
       if (args.type == 'DATE') {
         const data = await context.prisma.viewCount.groupBy({
           _sum: {
@@ -39,7 +39,52 @@ export default {
           }
         })
       }
-      return []
+      if (args.type == 'WEEK') {
+        const data = await context.prisma.viewCount.groupBy({
+          _sum: {
+            view: true,
+          },
+          by: ['mangaId'],
+          orderBy: {
+            _sum: {
+              view: 'desc',
+            },
+          },
+          where: {
+            date: {
+              in: getDayOfWeek(),
+            },
+          },
+          take: 10,
+        })
+
+        return data.map((e) => {
+          return {
+            view: e._sum.view,
+            mangaId: e.mangaId,
+          }
+        })
+      }
+      const data = await context.prisma.viewCount.groupBy({
+        _sum: {
+          view: true,
+        },
+        by: ['mangaId'],
+        orderBy: {
+          _sum: {
+            view: 'desc',
+          },
+        },
+        where: {},
+        take: 10,
+      })
+
+      return data.map((e) => {
+        return {
+          view: e._sum.view,
+          mangaId: e.mangaId,
+        }
+      })
     },
   },
   TopMangaResponse: {

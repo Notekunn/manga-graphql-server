@@ -113,7 +113,7 @@ async function genManga() {
       name: mangaName,
       slug: getSlug(mangaName),
       artistId: randomNumber(1, COUNT_ARTIST),
-      coverURL: faker.image.imageUrl(280, 320, 'comic'),
+      coverURL: 'http://st.imageinstant.net/data/comics/32/vo-luyen-dinh-phong.jpg',
       releaseYear: String(randomNumber(1997, 2020)),
       description: faker.lorem.paragraph(randomNumber(2, 6)),
     },

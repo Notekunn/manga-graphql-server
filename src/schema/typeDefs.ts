@@ -24,7 +24,7 @@ const typeDefs = gql`
     username: String!
     name: String
     email: String!
-    password: String!
+    # password: String!
     avatarURL: String
     role: UserRole!
     groups: [GroupUser!]!
@@ -88,8 +88,18 @@ const typeDefs = gql`
 
     topManga(type: TopMangaType): [TopMangaResponse!]!
   }
+  input AuthInput {
+    username: String!
+    password: String!
+  }
+  type AuthResponse {
+    userId: Int!
+    token: String!
+    tokenExpiration: Date!
+  }
   type Mutation {
     updateView(chapterId: Int!): Int!
+    login(userInput: AuthInput!): AuthResponse!
   }
   type TopMangaResponse {
     manga: Manga!
