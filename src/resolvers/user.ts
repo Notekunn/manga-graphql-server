@@ -1,5 +1,5 @@
 import type { Context, Arguments, Prisma } from '../context'
-import { Group, prisma, User } from '@prisma/client'
+import { Group, User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { JWTPayload, resolvePagingArgs } from '../utils'
@@ -8,6 +8,10 @@ const { SECRET_KEY = 'secret-key' } = process.env
 interface AuthInput {
   username: string
   password: string
+}
+interface FollowInput {
+  mangaId: number
+  unfollow?: boolean
 }
 const comparePassword = function (password: string, passwd: string): boolean {
   return !!passwd && passwd == password
@@ -43,7 +47,7 @@ export default {
           ],
         },
       })
-      if (!user || !comparePassword(user.password, user.password)) {
+      if (!user || !comparePassword(user.password, password)) {
         throw new Error('Tên tài khoản hoặc mật khẩu không đúng')
       }
       const payload: JWTPayload = {
@@ -55,6 +59,39 @@ export default {
       })
       const tokenExpiration = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
       return { token, tokenExpiration, userId: user.id }
+    },
+    followManga: async (parent: any, args: FollowInput, context: Context) => {
+      // Trả về boolean xem trạng thái hiện tại đang follow hay không
+      // Nếu đang follow trả về true
+      const user = context.user
+      if (!user) throw new Error(`Bạn cần đăng nhập để theo dõi`)
+      const { mangaId, unfollow } = args
+      // Nếu hủy follow
+      if (unfollow) {
+        await context.prisma.followedManga.deleteMany({
+          where: {
+            mangaId,
+            userId: user.id,
+          },
+        })
+        return false
+      } else {
+        // Nếu follow
+        await context.prisma.followedManga.upsert({
+          create: {
+            mangaId,
+            userId: user.id,
+          },
+          update: {},
+          where: {
+            userId_mangaId: {
+              mangaId,
+              userId: user.id,
+            },
+          },
+        })
+        return true
+      }
     },
   },
   User: {
@@ -69,6 +106,17 @@ export default {
         },
       })
       return data.map((e) => e)
+    },
+    followedManga: async (parent: User, args: any, context: Context) => {
+      const data = await context.prisma.followedManga.findMany({
+        where: {
+          userId: parent.id,
+        },
+        include: {
+          manga: true,
+        },
+      })
+      return data.map((e) => e.manga)
     },
   },
 }

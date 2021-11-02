@@ -8,14 +8,15 @@ generator client {
 }
 
 model User {
-  id          Int           @id @default(autoincrement())
-  username    String        @unique
-  name        String?
-  email       String        @unique
-  password    String
-  avatarURL   String?
-  role        UserRole      @default(MEMBER)
-  GroupMember GroupMember[]
+  id            Int             @id @default(autoincrement())
+  username      String          @unique
+  name          String?
+  email         String          @unique
+  password      String
+  avatarURL     String?
+  role          UserRole        @default(MEMBER)
+  GroupMember   GroupMember[]
+  MangaFollower FollowedManga[]
 }
 
 model Artist {
@@ -73,6 +74,7 @@ model Manga {
   categories       CategoriesOnManga[]
   translatorGroups GroupsOnManga[]
   chapters         Chapter[]
+  MangaFollower    FollowedManga[]
 }
 
 model CategoriesOnManga {
@@ -116,6 +118,17 @@ model ViewCount {
 
   @@id([chapterId, date])
   @@map("view_count")
+}
+
+model FollowedManga {
+  userId    Int
+  mangaId   Int
+  user      User     @relation(fields: [userId], references: [id])
+  manga     Manga    @relation(fields: [mangaId], references: [id])
+  startTime DateTime @default(now()) @db.DateTime(0)
+
+  @@id([userId, mangaId])
+  @@map("followed_mangaFollowedManga")
 }
 
 enum UserRole {

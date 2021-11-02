@@ -28,6 +28,7 @@ const typeDefs = gql`
     avatarURL: String
     role: UserRole!
     groups: [GroupUser!]!
+    followedManga: [Manga!]!
   }
   type Artist {
     id: ID!
@@ -101,6 +102,7 @@ const typeDefs = gql`
   type Mutation {
     updateView(chapterId: Int!): Int!
     login(userInput: AuthInput!): AuthResponse!
+    followManga(mangaId: Int!, unfollow: Boolean): Boolean!
   }
   type TopMangaResponse {
     manga: Manga!
