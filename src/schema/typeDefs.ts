@@ -28,7 +28,6 @@ const typeDefs = gql`
     avatarURL: String
     role: UserRole!
     groups: [GroupUser!]!
-    followedManga: [Manga!]!
   }
   type Artist {
     id: ID!
@@ -68,6 +67,8 @@ const typeDefs = gql`
     categories: [Category!]!
     groups: [Group!]!
     chapters(cursor: Int, limit: Int): [Chapter!]!
+    lastChapter: Chapter
+    isFollowing: Boolean!
   }
   type Chapter {
     manga: Manga!
@@ -88,6 +89,7 @@ const typeDefs = gql`
     chapter: Chapter!
 
     topManga(type: TopMangaType): [TopMangaResponse!]!
+    followedManga: [Manga!]!
     profile: User!
   }
   input AuthInput {

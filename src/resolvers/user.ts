@@ -107,16 +107,5 @@ export default {
       })
       return data.map((e) => e)
     },
-    followedManga: async (parent: User, args: any, context: Context) => {
-      const data = await context.prisma.followedManga.findMany({
-        where: {
-          userId: parent.id,
-        },
-        include: {
-          manga: true,
-        },
-      })
-      return data.map((e) => e.manga)
-    },
   },
 }

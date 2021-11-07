@@ -107,6 +107,7 @@ model Chapter {
   lastUpdated     DateTime    @default(now()) @db.DateTime(0)
   content         String?     @db.Text
   ViewCount       ViewCount[]
+  Comment         Comment[]
 }
 
 model ViewCount {
@@ -128,7 +129,15 @@ model FollowedManga {
   startTime DateTime @default(now()) @db.DateTime(0)
 
   @@id([userId, mangaId])
-  @@map("followed_mangaFollowedManga")
+  @@map("followed_manga")
+}
+
+model Comment {
+  id        Int @id @default(autoincrement())
+  mangaId   Int
+  chapterId Int
+
+  chapter Chapter @relation(fields: [chapterId], references: [id])
 }
 
 enum UserRole {

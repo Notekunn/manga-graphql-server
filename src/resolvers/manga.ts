@@ -86,6 +86,25 @@ export default {
         }
       })
     },
+    followedManga: async (parent: any, args: any, context: Context) => {
+      const user = context.user
+      if (user == null) return []
+      const data = await context.prisma.followedManga.findMany({
+        where: {
+          userId: user.id,
+        },
+        include: {
+          manga: true,
+        },
+        orderBy: {
+          manga: {
+            lastUpdated: 'desc',
+          },
+        },
+        take: 10,
+      })
+      return data.map((e) => e.manga)
+    },
   },
   TopMangaResponse: {
     manga: (parent: { mangaId: number }, args: any, context: Context) => {
@@ -139,6 +158,30 @@ export default {
         ...pagging,
       })
       return data
+    },
+    lastChapter: async (parent: Manga, args: any, context: Context) => {
+      const data = await context.prisma.chapter.findFirst({
+        where: {
+          mangaId: parent.id,
+        },
+        orderBy: {
+          id: 'desc',
+        },
+      })
+      return data
+    },
+    isFollowing: async (parent: Manga, args: any, context: Context) => {
+      const user = context.user
+      if (!user) return false
+      const data = await context.prisma.followedManga.findUnique({
+        where: {
+          userId_mangaId: {
+            mangaId: parent.id,
+            userId: user.id,
+          },
+        },
+      })
+      return data != null
     },
   },
 }
