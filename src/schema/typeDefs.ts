@@ -86,7 +86,7 @@ const typeDefs = gql`
     categories: [Category!]!
     groups: [Group!]!
     chapters: [Chapter!]!
-    chapter: Chapter!
+    chapter(slug: String!, chapterName: String!): Chapter
 
     topManga(type: TopMangaType): [TopMangaResponse!]!
     followedManga: [Manga!]!

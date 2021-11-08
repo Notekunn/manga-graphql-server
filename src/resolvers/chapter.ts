@@ -1,6 +1,9 @@
 import type { Context, Prisma, Arguments } from '../context'
 import { getCurrentDate } from '../utils'
-interface ChapterFilter {}
+interface ChapterFilter {
+  slug: string
+  chapterName: string
+}
 export default {
   Query: {
     chapters: (_parent: any, args: Arguments, context: Context) => {
@@ -8,10 +11,13 @@ export default {
         where: {},
       })
     },
-    chapter: (_parent: any, args: { chapterId: number }, context: Context) => {
-      return context.prisma.chapter.findUnique({
+    chapter: (_parent: any, args: ChapterFilter, context: Context) => {
+      return context.prisma.chapter.findFirst({
         where: {
-          id: args.chapterId,
+          chapterName: args.chapterName,
+          manga: {
+            slug: args.slug,
+          },
         },
         include: {
           manga: true,
