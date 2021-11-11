@@ -47,19 +47,6 @@ export default {
         take: 2,
       })
     },
-    isFollowing: async (_parent: Chapter, args: any, context: Context) => {
-      const user = context.user
-      if (!user) return false
-      const data = await context.prisma.followedManga.findUnique({
-        where: {
-          userId_mangaId: {
-            mangaId: _parent.mangaId,
-            userId: user.id,
-          },
-        },
-      })
-      return data !== null
-    },
   },
   Mutation: {
     updateView: async (parent: any, args: { chapterId: number }, context: Context) => {

@@ -153,7 +153,7 @@ export default {
           mangaId: parent.id,
         },
         orderBy: {
-          id: 'desc',
+          order: 'desc',
         },
         ...pagging,
       })

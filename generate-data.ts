@@ -203,7 +203,9 @@ async function genChapters(mangaId: number, n: number) {
           },
         },
         mangaId,
-        chapterFullName: faker.lorem.word(randomNumber(3, 8)),
+        order: i,
+        viewCount: randomNumber(10, 100),
+        chapterFullName: faker.lorem.words(randomNumber(3, 8)),
       },
     })
   }

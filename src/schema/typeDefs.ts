@@ -80,7 +80,6 @@ const typeDefs = gql`
     lastUpdated: Date!
     prevChapter: Chapter
     nextChapter: Chapter
-    isFollowing: Boolean!
   }
 
   type Query {

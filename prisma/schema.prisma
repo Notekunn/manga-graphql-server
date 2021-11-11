@@ -100,6 +100,7 @@ model GroupsOnManga {
 model Chapter {
   id              Int         @id @default(autoincrement())
   chapterName     String
+  order           Int
   mangaId         Int
   manga           Manga       @relation(fields: [mangaId], references: [id])
   chapterFullName String?
