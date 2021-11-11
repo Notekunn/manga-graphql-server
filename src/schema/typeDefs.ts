@@ -71,13 +71,18 @@ const typeDefs = gql`
     isFollowing: Boolean!
   }
   type Chapter {
+    id: ID!
     manga: Manga!
     chapterName: String!
     chapterFullName: String
     viewCount: Int!
     content: String
     lastUpdated: Date!
+    prevChapter: Chapter
+    nextChapter: Chapter
+    isFollowing: Boolean!
   }
+
   type Query {
     mangas: [Manga!]!
     manga(slug: String!): Manga
@@ -86,12 +91,13 @@ const typeDefs = gql`
     categories: [Category!]!
     groups: [Group!]!
     chapters: [Chapter!]!
-    chapter(slug: String!, chapterName: String!): Chapter
+    chapter(id: Int!): Chapter
 
     topManga(type: TopMangaType): [TopMangaResponse!]!
     followedManga: [Manga!]!
     profile: User!
   }
+
   input AuthInput {
     username: String!
     password: String!

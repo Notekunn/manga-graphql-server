@@ -1,8 +1,8 @@
 import type { Context, Prisma, Arguments } from '../context'
+import { Chapter } from '@prisma/client'
 import { getCurrentDate } from '../utils'
 interface ChapterFilter {
-  slug: string
-  chapterName: string
+  id: number
 }
 export default {
   Query: {
@@ -14,15 +14,51 @@ export default {
     chapter: (_parent: any, args: ChapterFilter, context: Context) => {
       return context.prisma.chapter.findFirst({
         where: {
-          chapterName: args.chapterName,
-          manga: {
-            slug: args.slug,
-          },
+          id: args.id,
         },
         include: {
           manga: true,
         },
       })
+    },
+  },
+  Chapter: {
+    prevChapter: (_parent: Chapter, args: any, context: Context) => {
+      return context.prisma.chapter.findFirst({
+        where: {
+          mangaId: _parent.mangaId,
+        },
+        cursor: {
+          id: _parent.id,
+        },
+        skip: 1,
+        take: -1,
+      })
+    },
+    nextChapter: (_parent: Chapter, args: any, context: Context) => {
+      return context.prisma.chapter.findFirst({
+        where: {
+          mangaId: _parent.mangaId,
+        },
+        cursor: {
+          id: _parent.id,
+        },
+        skip: 1,
+        take: 2,
+      })
+    },
+    isFollowing: async (_parent: Chapter, args: any, context: Context) => {
+      const user = context.user
+      if (!user) return false
+      const data = await context.prisma.followedManga.findUnique({
+        where: {
+          userId_mangaId: {
+            mangaId: _parent.mangaId,
+            userId: user.id,
+          },
+        },
+      })
+      return data !== null
     },
   },
   Mutation: {
