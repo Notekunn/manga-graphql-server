@@ -1,11 +1,75 @@
 import type { Arguments, Context, Prisma } from '../context'
-import type { Manga } from '@prisma/client'
+import type { Manga, MangaStatus } from '@prisma/client'
 import { getCurrentDate, getDayOfWeek, resolvePagingArgs } from '../utils'
 
+export interface MangaFilter {
+  sort?:
+    | 'LAST_UPDATE'
+    | 'FOLLOW_COUNT'
+    | 'COMMENT'
+    | 'CHAPTER_COUNT'
+    | 'TOP_DAY'
+    | 'TOP_WEEK'
+    | 'TOP_MONTH'
+    | 'TOP_ALL'
+    | 'NAME'
+  keyword?: string
+  status?: MangaStatus
+  categories?: string[]
+}
 export default {
   Query: {
-    mangas: (parent: any, args: any, context: Context) => {
-      return context.prisma.manga.findMany({})
+    mangas: (parent: any, args: Record<'filter', MangaFilter>, context: Context) => {
+      const { status, sort, keyword, categories } = args.filter || {}
+      console.log(
+        '🚀 ~ file: manga.ts ~ line 23 ~ mangas: ~ status, sort, keyword, categories',
+        status,
+        sort,
+        keyword,
+        categories
+      )
+      const where: Prisma.MangaWhereInput = {}
+      if (categories && categories?.length > 0) {
+        where.categories = {
+          some: {
+            category: {
+              slug: {
+                in: categories,
+              },
+            },
+          },
+        }
+      }
+      if (!!keyword) {
+        where.name = {
+          contains: keyword,
+        }
+      }
+      if (!!status && (status == 'ONGOING' || status == 'COMPLETED')) {
+        where.status = status
+      }
+
+      const orderBy: Prisma.MangaOrderByWithRelationInput = {}
+
+      if (!sort || sort === 'LAST_UPDATE') orderBy.lastUpdated = 'desc'
+      if (sort === 'CHAPTER_COUNT') {
+        orderBy.chapters = {
+          _count: 'desc',
+        }
+      }
+      if (sort === 'FOLLOW_COUNT') {
+        orderBy.MangaFollower = {
+          _count: 'desc',
+        }
+      }
+      if (sort === 'NAME') {
+        orderBy.name = 'asc'
+      }
+      return context.prisma.manga.findMany({
+        where,
+        orderBy,
+        distinct: 'id',
+      })
     },
     manga: (parent: any, args: { slug: string }, context: Context) => {
       return context.prisma.manga.findUnique({

@@ -19,6 +19,25 @@ const typeDefs = gql`
     ONGOING
     COMPLETED
   }
+
+  enum TopMangaType {
+    DATE
+    WEEK
+    ALL
+  }
+
+  enum MangaSortType {
+    NAME
+    LAST_UPDATE
+    FOLLOW_COUNT
+    COMMENT
+    CHAPTER_COUNT
+    TOP_DAY
+    TOP_WEEK
+    TOP_MONTH
+    TOP_ALL
+  }
+
   type User {
     id: ID!
     username: String!
@@ -52,6 +71,11 @@ const typeDefs = gql`
     members: [User!]!
     mangas: [Manga!]!
   }
+  type GroupUser {
+    group: Group!
+    role: GroupRole!
+    participantAt: Date!
+  }
   type Manga {
     id: ID!
     name: String!
@@ -83,7 +107,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    mangas: [Manga!]!
+    mangas(filter: MangaFilter): [Manga!]!
     manga(slug: String!): Manga
     artists: [Artist!]!
     users(cursor: Int, limit: Int): [User!]!
@@ -95,6 +119,13 @@ const typeDefs = gql`
     topManga(type: TopMangaType): [TopMangaResponse!]!
     followedManga: [Manga!]!
     profile: User!
+  }
+
+  input MangaFilter {
+    sort: MangaSortType
+    keyword: String
+    status: MangaStatus
+    categories: [String!]
   }
 
   input AuthInput {
@@ -114,16 +145,6 @@ const typeDefs = gql`
   type TopMangaResponse {
     manga: Manga!
     view: Int!
-  }
-  enum TopMangaType {
-    DATE
-    WEEK
-    ALL
-  }
-  type GroupUser {
-    group: Group!
-    role: GroupRole!
-    participantAt: Date!
   }
 `
 export default typeDefs
