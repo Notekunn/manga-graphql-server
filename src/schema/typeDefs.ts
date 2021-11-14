@@ -107,7 +107,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    mangas(filter: MangaFilter): [Manga!]!
+    mangas(filter: MangaFilter, pagination: OffsetPagination): [Manga!]!
     manga(slug: String!): Manga
     artists: [Artist!]!
     users(cursor: Int, limit: Int): [User!]!
@@ -126,6 +126,11 @@ const typeDefs = gql`
     keyword: String
     status: MangaStatus
     categories: [String!]
+  }
+
+  input OffsetPagination {
+    page: Int!
+    itemPerPage: Int!
   }
 
   input AuthInput {

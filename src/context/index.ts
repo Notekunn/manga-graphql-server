@@ -19,3 +19,8 @@ export interface Pagination {
 }
 
 export type Arguments<T = {}> = T & Pagination
+
+export interface OffsetPagination {
+  page: number
+  itemPerPage: number
+}

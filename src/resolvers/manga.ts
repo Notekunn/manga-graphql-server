@@ -1,4 +1,4 @@
-import type { Arguments, Context, Prisma } from '../context'
+import type { Arguments, Context, OffsetPagination, Prisma } from '../context'
 import type { Manga, MangaStatus } from '@prisma/client'
 import { getCurrentDate, getDayOfWeek, resolvePagingArgs } from '../utils'
 
@@ -19,15 +19,12 @@ export interface MangaFilter {
 }
 export default {
   Query: {
-    mangas: (parent: any, args: Record<'filter', MangaFilter>, context: Context) => {
+    mangas: (
+      parent: any,
+      args: { filter?: MangaFilter; pagination?: OffsetPagination },
+      context: Context
+    ) => {
       const { status, sort, keyword, categories } = args.filter || {}
-      console.log(
-        '🚀 ~ file: manga.ts ~ line 23 ~ mangas: ~ status, sort, keyword, categories',
-        status,
-        sort,
-        keyword,
-        categories
-      )
       const where: Prisma.MangaWhereInput = {}
       if (categories && categories?.length > 0) {
         where.categories = {
@@ -65,10 +62,14 @@ export default {
       if (sort === 'NAME') {
         orderBy.name = 'asc'
       }
+
+      const { page = 1, itemPerPage = 20 } = args.pagination || {}
       return context.prisma.manga.findMany({
         where,
         orderBy,
         distinct: 'id',
+        skip: (page - 1) * itemPerPage,
+        take: itemPerPage,
       })
     },
     manga: (parent: any, args: { slug: string }, context: Context) => {
