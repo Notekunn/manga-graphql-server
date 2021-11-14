@@ -14,8 +14,8 @@ interface FollowInput {
   unfollow?: boolean
 }
 const comparePassword = function (password: string, passwd: string): boolean {
-  return !!passwd && passwd == password
-  // return bcrypt.compareSync(passwd, password)
+  // return !!passwd && passwd == password
+  return bcrypt.compareSync(passwd, password)
 }
 export default {
   Query: {

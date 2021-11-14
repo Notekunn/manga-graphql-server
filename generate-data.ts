@@ -4,9 +4,10 @@ import { Prisma, PrismaClient } from '@prisma/client'
 const COUNT_ARTIST = 10
 const COUNT_CATEGORY = 50
 const COUNT_USER = 10
-const COUNT_MANGA = 10
+const COUNT_MANGA = 100
 const COUNT_GROUP = 10
 const COUNT_MEMBER_ON_GROUP = 3
+import bcrypt from 'bcrypt'
 function getSlug(title: string): string {
   //Đổi chữ hoa thành chữ thường
   let slug = title.toLowerCase()
@@ -82,14 +83,11 @@ async function genUsers(n: number) {
     const card = faker.helpers.createCard()
     const user: Prisma.UserCreateManyInput = {
       email: card.email,
-      password: faker.internet.password(),
-      username: card.username,
+      password: bcrypt.hashSync('12345', 10),
+      username: `user${i + 1}`,
       avatarURL: faker.image.avatar(),
       name: card.name,
     }
-    faker.setLocale('en')
-    user.username = faker.helpers.createCard().username.toLowerCase()
-    faker.setLocale('vi')
     data.push(user)
   }
   await prisma.user.createMany({
