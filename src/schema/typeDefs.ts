@@ -132,6 +132,10 @@ const typeDefs = gql`
     page: Int!
     itemPerPage: Int!
   }
+  input Pagination {
+    cursor: Int
+    limit: Int!
+  }
 
   input AuthInput {
     username: String!
