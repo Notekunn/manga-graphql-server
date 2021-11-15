@@ -17,6 +17,8 @@ model User {
   role          UserRole        @default(MEMBER)
   GroupMember   GroupMember[]
   MangaFollower FollowedManga[]
+
+  @@map("user")
 }
 
 model Artist {
@@ -26,6 +28,8 @@ model Artist {
   about     String?
   avatarURL String?
   mangas    Manga[]
+
+  @@map("artist")
 }
 
 model Category {
@@ -34,6 +38,8 @@ model Category {
   slug        String              @unique
   description String?
   mangas      CategoriesOnManga[]
+
+  @@map("category")
 }
 
 model Group {
@@ -75,6 +81,8 @@ model Manga {
   translatorGroups GroupsOnManga[]
   chapters         Chapter[]
   MangaFollower    FollowedManga[]
+
+  @@map("manga")
 }
 
 model CategoriesOnManga {
@@ -109,6 +117,8 @@ model Chapter {
   content         String?     @db.Text
   ViewCount       ViewCount[]
   Comment         Comment[]
+
+  @@map("chapter")
 }
 
 model ViewCount {
@@ -139,6 +149,7 @@ model Comment {
   chapterId Int
 
   chapter Chapter @relation(fields: [chapterId], references: [id])
+  @@map("comment")
 }
 
 enum UserRole {
