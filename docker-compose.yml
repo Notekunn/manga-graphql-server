@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  server: 
+    image: manga_server
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mysql
+    ports: 
+      - 4000:4000
+    networks:
+      - default
+    environment:
+      DATABASE_URL: mysql://root:@database:3306/manga
+      SECRET_KEY: cuongdeptraisieucappromax
+  database:
+    image: mysql
+    ports: 
+      - 3305:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_DATABASE: manga
+    networks:
+      - default  
+    volumes:
+      - manga_data:/var/lib/mysql
+volumes:
+    manga_data:

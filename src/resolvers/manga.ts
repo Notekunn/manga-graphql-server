@@ -151,7 +151,7 @@ export default {
         }
       })
     },
-    followedManga: async (parent: any, args: any, context: Context) => {
+    subscribedManga: async (parent: any, args: any, context: Context) => {
       const user = context.user
       if (user == null) return []
       const data = await context.prisma.followedManga.findMany({
@@ -235,7 +235,7 @@ export default {
       })
       return data
     },
-    isFollowing: async (parent: Manga, args: any, context: Context) => {
+    subscribed: async (parent: Manga, args: any, context: Context) => {
       const user = context.user
       if (!user) return false
       const data = await context.prisma.followedManga.findUnique({

@@ -92,7 +92,7 @@ const typeDefs = gql`
     groups: [Group!]!
     chapters(cursor: Int, limit: Int): [Chapter!]!
     lastChapter: Chapter
-    isFollowing: Boolean!
+    subscribed: Boolean!
   }
   type Chapter {
     id: ID!
@@ -117,7 +117,7 @@ const typeDefs = gql`
     chapter(id: Int!): Chapter
 
     topManga(type: TopMangaType): [TopMangaResponse!]!
-    followedManga: [Manga!]!
+    subscribedManga: [Manga!]!
     profile: User!
   }
 
@@ -149,7 +149,7 @@ const typeDefs = gql`
   type Mutation {
     updateView(chapterId: Int!): Int!
     login(userInput: AuthInput!): AuthResponse!
-    followManga(mangaId: Int!, unfollow: Boolean): Boolean!
+    subscribeManga(mangaId: Int!, unsubscribe: Boolean): Boolean!
   }
   type TopMangaResponse {
     manga: Manga!

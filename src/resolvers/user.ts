@@ -11,7 +11,7 @@ interface AuthInput {
 }
 interface FollowInput {
   mangaId: number
-  unfollow?: boolean
+  unsubscribe?: boolean
 }
 const comparePassword = function (password: string, passwd: string): boolean {
   // return !!passwd && passwd == password
@@ -60,14 +60,14 @@ export default {
       const tokenExpiration = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
       return { token, tokenExpiration, userId: user.id }
     },
-    followManga: async (parent: any, args: FollowInput, context: Context) => {
+    subscribeManga: async (parent: any, args: FollowInput, context: Context) => {
       // Trả về boolean xem trạng thái hiện tại đang follow hay không
       // Nếu đang follow trả về true
       const user = context.user
       if (!user) throw new Error(`Bạn cần đăng nhập để theo dõi`)
-      const { mangaId, unfollow } = args
-      // Nếu hủy follow
-      if (unfollow) {
+      const { mangaId, unsubscribe } = args
+      // Nếu hủy subscribe
+      if (!!unsubscribe) {
         await context.prisma.followedManga.deleteMany({
           where: {
             mangaId,
